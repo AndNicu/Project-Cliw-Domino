@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="http://127.0.0.1:1234/socket.io/socket.io.js"></script>
+
+<body onload="start()" style="margin:0;" >
+	<h1 style="position:absolute; left:40%; top:40%;">Wait for other player to join.</h1>
+	<canvas onclick="verif()" id="myCanvas2" height=100% width=100% style=" position:absolute; top:0px;left:0px;right:0px; margin:0; background:#87D7ED;"></canvas>
+	
+</body>
+
+<script>
+
+
+var socket;
+function start(){
+		var verification = 0;
+  try{
+            socket=io.connect('http://127.0.0.1:1234');
+        }
+        catch(e){}
+
+        if(socket!=undefined){
+
+            socket.emit('input',{mesaj:'trimite-mi ceva'});
+            socket.emit('input',{mesaj:'trimite-mi ceva 2'});
+
+            socket.on('start',function(data){
+
+                var mesaj=data.mesaj;
+				                console.log(mesaj);
+              
+           });
+		      socket.on('pieseStart',function(data){
+
+			  if(turn==-1)
+			  {
+			  turn=data.mesaj;
+			  if(data.mesaj==1)
+			  nrJuc=1;
+			  else nrJuc=0;
+			  }
+			  else{
+			   pieseMana.push(data.p1);
+			   pieseMana.push(data.p2);
+			   pieseMana.push(data.p3);
+			   pieseMana.push(data.p4);
+			   pieseMana.push(data.p5);
+			  console.log(pieseMana[0]);
+			  			  console.log(pieseMana[1]);
+			  console.log(pieseMana[2]);
+			  console.log(pieseMana[3]);
+			  console.log(pieseMana[4]);
+
+              getPieces();
+
+			  }
+
+              
+           });
+		   
+		   socket.on('mutare',function(data){
+
+		   console.log('s-a facut o mutare');
+              //  document.canvas2.src ="piesa4.png";
+			  turn=1;
+			  var ps=data.piesa;
+			  if(ps==-1)
+			  console.log('nu am primit nimic');
+			  else{
+			  var x=data.cordx;
+              var y=data.cordy;
+			  var u1=data.used1;
+			  var u2=data.used2;
+			  var astupP=data.astupP;	
+	          var astup=data.astup;
+              var ps=data.piesa;
+			  var x=data.cordx;
+              var y=data.cordy;
+				var ps1=ps;
+			  var v;
+			  var h;
+              if(ps>83)
+			  ps=ps-84;
+			  else if(ps>55)
+			  ps=ps-56;
+			  else if(ps>27)
+			  ps=ps-28;
+			  
+			   if (astup==1)
+			  {
+			    if(piesa[astupP].nume>83)
+				{x=piesa[astupP].x-(canvas.height/10);console.log('mut 83 1');}
+                else if	(piesa[astupP].nume>55)
+                 {y=piesa[astupP].y+(canvas.height/10);console.log('mut 55 1');}
+				 else if(piesa[astupP].nume>27)
+                 {x=piesa[astupP].x+(canvas.height/10);console.log('mut 27 1');}
+				 else
+				 {y=piesa[astupP].y-(canvas.height/10);console.log('mut 0 1');}
+
+			  }
+			  else if(astup==2)
+			  {
+			  if(piesa[astupP].nume>83)
+				{x=piesa[astupP].x+canvas.height/10;console.log('mut 83 2');}
+                else if	(piesa[astupP].nume>55)
+                 {y=piesa[astupP].y-canvas.height/10;console.log('mut 55 2');}
+				 else if(piesa[astupP].nume>27)
+                 {x=piesa[astupP].x-canvas.height/10;console.log('mut 27 2');}
+				 else
+				 {y=piesa[astupP].y+canvas.height/10;console.log('mut 0 2');}
+			  }
+			 
+			  
+			 piesa[ps].image = images[ps1];
+			  piesa[ps].nume = ps1;
+			  piesa[ps].used = 2;
+			  piesa[ps].hand = 0;
+			  if(astup==1)
+			  piesa[astupP].used1=1;
+			  else
+			  if(astup==2)
+			  piesa[astupP].used2=1;
+			  else if(astup>4)
+			  firstPieceCount[astup-5] = 0;
+
+			 if((ps1>27&&ps1<56)||ps1>83)
+			  {
+              w = canvas.height/10;
+			  h = canvas.height/20;
+			  }
+			  else 
+			  {
+			   w = canvas.height/20;
+			  h = canvas.height/10;
+			  }
+			  piesa[ps].w = w;
+			  piesa[ps].h =h;
+			  piesa[ps].used1=u1;
+			  piesa[ps].used2=u2;
+			  piesa[ps].x = x;
+			  piesa[ps].y = y;
+			  if(firstPiece==-1)
+			  firstPiece = ps;
+		exist = 1;
+				if(astup==1 || astup==2)
+		console.log('lipesc de '+piesa[astupP].nume+' la capatul '+astup);
+        console.log('lipesc de '+piesa[ps].nume+' la capatul 1 '+piesa[ps].used1+' la capartul2 '+piesa[ps].used2+' poza nr '+ps1);
+			  //ctx.drawImage(piesa[ps].image, piesa[ps].x, piesa[ps].y, piesa[ps].w, piesa[ps].h);  
+			  
+			  //trage carte daca nu mai ai
+              /*for(var i=0;i<28;i++)
+			                for(var j=0;j<28;j++)
+			  if(piesa[i].hand==1&&piesa[j].used)*/
+}
+			  
+var validare = 0;
+	var valCount = 0;
+	verification = 0;
+
+	while(validare == 0 && turn==1)
+	{
+
+		for(var j=0; j<countP; j++)
+			for(var i=0; i<28; i++)
+				if(piesa[i].hand == 0 && piesa[i].used == 2)
+				{
+					valCount++;
+					if((parts[i][0] == parts[hand[j]][0] && piesa[i].used1 == 0) || 
+					   (parts[i][0] == parts[hand[j]][1] && piesa[i].used1 == 0) || 
+					   (parts[i][1] == parts[hand[j]][0] && piesa[i].used2 == 0) || 
+					   (parts[i][1] == parts[hand[j]][1] && piesa[i].used2 == 0))
+					{
+						validare = 1;
+						break;
+					}
+					
+					if(i == firstPiece && (parts[hand[j]][0] == parts[i][0] || parts[hand[j]][1] == parts[i][0]) && (firstPieceCount[0] == 1 || firstPieceCount[1] == 1 || firstPieceCount[2] == 1 || firstPieceCount[3] == 1 ) )
+				   {
+					validare = 1;
+					break;
+				   }				
+				}
+
+		if(validare == 0 && valCount > 0 && turn == 1)
+		{
+		
+                 console.log('am cerut o carte');
+				socket.emit('DrawCard',{mesaj:1});
+
+			/*piesa[random].x = piesa[random].x = 5+(55*(countP));
+			piesa[random].used = 2;
+			piesa[random].hand = 1;
+			piesa[random].player = 1;
+			hand[countP] = random;
+			countP++;*/
+				verification = 1;
+				break;
+
+
+
+		}
+
+		if (valCount == 0) validare = 1;
+	}
+
+
+			  
+			  
+		     render();
+			  
+			 // console.log(ps);
+  			  //console.log(x);
+			  //console.log(y);
+
+				
+           });
+
+		  socket.on('changeTurn',function(data)
+		  {
+              console.log('changeturn');
+			   	turn=1;
+
+              
+          });
+		socket.on('GetCard',function(data)
+		{
+
+			   	 if(verification == 1 && turn == 1)
+			   	 {
+
+				     var carte=data.p;
+				     console.log('Am primit cartea '+carte);
+				  
+					piesa[carte].x = 5+(55*countP);
+					piesa[carte].used = 2;
+					piesa[carte].hand = 1;
+					piesa[carte].player = 1;
+					hand[countP] = carte;
+					countP++;
+			        render();
+                    turn = 0;
+					console.log('am tras o carte');
+
+				socket.emit('mutare',{piesa:-1,cordx:-1,cordy:-1,used1:-1,used2:-1,astup:-1,astupP:-1});
+
+
+				}
+
+              
+          });
+		  socket.on('end',function(data)
+		{
+
+		turn=0;
+			   	 var rez=data.p;
+				 if(rez==1)
+				 {
+				 ctx.font="20px Georgia";
+ctx.fillText("YOU WIN!",10,50);
+
+ctx.font="30px Verdana";
+// Create gradient
+var gradient=ctx.createLinearGradient(0,0,c.width,0);
+gradient.addColorStop("0","magenta");
+gradient.addColorStop("0.5","blue");
+gradient.addColorStop("1.0","red");
+// Fill with gradient
+ctx.fillStyle=gradient;
+ctx.fillText("Big smile!",10,90);
+				 }
+				 else{
+				 ctx.font="20px Georgia";
+ctx.fillText("YOU LOSE!",10,50);
+
+ctx.font="30px Verdana";
+// Create gradient
+var gradient=ctx.createLinearGradient(0,0,c.width,0);
+gradient.addColorStop("0","magenta");
+gradient.addColorStop("0.5","blue");
+gradient.addColorStop("1.0","red");
+// Fill with gradient
+ctx.fillStyle=gradient;
+ctx.fillText("Big smile!",10,90);
+				 }
+
+          });
+			
+
+        }
+}
+var pieseMana=[];
+var turn=-1;
+var piesaMijloc=-1;
+var piese = [];
+var freePieces = [];
+var canvas = document.getElementById('myCanvas2');
+var ctx = document.getElementById('myCanvas2').getContext("2d");
+var nrJuc;
+
+var setx;
+var sety;
+var exist = 0;
+var testPas = 5;
+var validate = [];
+
+var firstPiece = -1;
+var firstPieceCount = [];
+
+for(var i=0; i<4; i++)
+	firstPieceCount[i] = 1;
+
+var setRectx;
+var setRecty;
+
+var astup;
+var astupP=-1;
+var tested = 1;
+var countP = 0;
+
+var currParts = [];
+
+
+var images = [];
+var selected;
+
+var parts = [[0,0], [0,1], [0,2], [0,3], [0,4], [0,5], [0,6], [1,1], [1,2], [1,3], [1,4], [1,5], [1,6], [2,2], [2,3], [2,4], [2,5], [2,6], [3,3], [3,4], [3,5], [3,6], [4,4], [4,5], [4,6], [5,5], [5,6], [6,6]];
+
+
+for(var i=0; i<112; i++)
+{
+	images[i] = new Image();
+	images[i].src=(i+1) + ".png";
+}
+
+var piesa = [];
+var hand = [];
+
+function getPieces()
+{
+	ctx.canvas.width  = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+
+	for(var i=0;i<28;i++)
+	{
+		piesa[i]=
+		{
+			image: images[i],
+			nume: i,
+			x: 0,
+			y: canvas.height-110,
+			w: ctx.canvas.height/20,
+			h: ctx.canvas.height/10,
+			pozition: "ver",
+			played: "no",
+			used: 0,
+			hand: 0,
+			used1: 0,
+			used2: 0,
+			player: 0
+		};
+
+		piese[piese.length]=piesa;
+		console.log(piese.length);
+	}
+
+	for(var i=0;i<5;i++)
+	{
+		
+		piesa[pieseMana[i]].x = 5+(55*((i+1)-1));
+		piesa[pieseMana[i]].used = 2;
+		piesa[pieseMana[i]].hand = 1;
+		piesa[pieseMana[i]].player = i;
+		hand[i] = pieseMana[i];
+		countP = 5;
+	
+	}
+
+	render();
+}
+
+function drawCard()
+{
+	var validare = 0;
+	var valCount = 0;
+
+	while(validare == 0)
+	{
+
+		for(var j=0; j<countP; j++)
+			for(var i=0; i<28; i++)
+				if(piesa[i].hand == 0 && piesa[i].used == 2)
+				{
+					valCount++;
+					if((parts[i][0] == parts[hand[j]][0] && piesa[i].used1 == 0) || 
+					   (parts[i][0] == parts[hand[j]][1] && piesa[i].used1 == 0) || 
+					   (parts[i][1] == parts[hand[j]][0] && piesa[i].used2 == 0) || 
+					   (parts[i][1] == parts[hand[j]][1] && piesa[i].used2 == 0))
+					{
+						validare = 1;
+						break;
+					}
+					
+					if(i == firstPiece && (parts[hand[j]][0] == parts[i][0] || parts[hand[j]][1] == parts[i][0]) && (firstPieceCount[0] == 1 || firstPieceCount[1] == 1 || firstPieceCount[2] == 1 || firstPieceCount[3] == 1 ) )
+				   {
+					validare = 1;
+					break;
+				   }				
+				}
+
+		if(validare == 0 && valCount > 0)
+		{
+			
+			
+
+            /*try{
+           var socket=io.connect('http://127.0.0.1:1234');
+        }
+        catch(e){}
+
+        if(socket!=undefined){
+								
+								
+                 console.log(astupP);
+				socket.emit('DrawCard',{mesaj:1});
+				
+				
+				
+        }
+			piesa[random].x = piesa[random].x = 5+(55*(countP));
+			piesa[random].used = 2;
+			piesa[random].hand = 1;
+			piesa[random].player = 1;
+			hand[countP] = random;
+			countP++;*/
+
+		}
+
+		if (valCount == 0) validare = 1;
+	}
+
+}
+
+function sortTiles()
+{
+	var count = 0;
+	position = 0;
+
+	for(var i=0; i<countP; i++)
+		if(piesa[hand[i]].used == 2 && piesa[hand[i]].hand == 0)
+			{
+				count = 1;
+				position = i;
+			}
+	if(count == 1)
+	{
+		for(var i=position+1; i<countP; i++)
+		{
+			piesa[hand[i]].x = 5+(55*(i-1));
+			hand[i-1] = hand[i];
+		}
+		countP--;
+	}
+}
+
+function createRect(x, y, p, face, H, W, usedF, itag)
+{
+
+	ctx.beginPath();
+	ctx.moveTo(x, y);
+	if(p == 1)
+	{
+		ctx.lineTo(x+W, y);
+		ctx.lineTo(x+W, y+H);
+		ctx.lineTo(x, y+H);
+		ctx.lineTo(x, y);
+		ctx.lineWidth = 3;
+        if(turn==1)
+		ctx.strokeStyle = ' #eada15';
+		else
+		ctx.strokeStyle = ' #C93C3C';
+		var rect=
+		{
+			x: x,
+			y: y,
+			width: W,
+			height: H,
+			type: p,
+			face: face,
+			used: usedF,
+			tag: itag
+		};
+	}
+
+	if(p == 2)
+	{
+		ctx.lineTo(x+H, y);
+		ctx.lineTo(x+H, y+W);
+		ctx.lineTo(x, y+W);
+		ctx.lineTo(x, y);
+		ctx.lineWidth = 3;
+		if(turn==1)
+		ctx.strokeStyle = ' #eada15';
+		else
+		ctx.strokeStyle = ' #C93C3C';
+		var rect=
+		{
+			x: x,
+			y: y,
+			width: H,
+			height: W,
+			type: p,
+			face: face,
+			used: usedF,
+			tag: itag
+		};
+	}
+
+	ctx.stroke();
+	freePieces[testP]=rect;	
+	validate[testP] = 1;
+}
+
+function particularCases(code, pPiesa, vecin)
+{
+	if(code == 1) //first piece of the game
+	{
+		if(pPiesa == 0 || pPiesa == 7 || pPiesa == 13 || pPiesa == 18 || pPiesa == 22 || pPiesa == 25 || pPiesa == 27)
+		{
+			createRect((canvas.width-150)/2, (canvas.height-200)/2, 1, 1, canvas.height/10, canvas.height/20, 0, 0);
+		}
+	}
+
+	if(code == 2) //using the first piece of the game
+	{
+		if(firstPieceCount[0] == 1)
+		{
+			testP = 0;
+
+			if(parts[pPiesa][0] == parts[firstPiece][0] && piesa[pPiesa].used1 == 0)
+			{
+				createRect((canvas.width-150)/2, (canvas.height-200)/2 - canvas.height/10, 1, 2, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[3] = 1;
+			}
+
+			if(parts[pPiesa][1] == parts[firstPiece][0] && piesa[pPiesa].used2 == 0)
+			{
+				createRect((canvas.width-150)/2, (canvas.height-200)/2 - canvas.height/10, 1, 1, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[3] = 2;
+			}
+
+			exist = 1;
+		}
+
+		if(firstPieceCount[1] == 1)
+		{
+			testP = 1;
+
+			if(parts[pPiesa][0] == parts[firstPiece][0] && piesa[pPiesa].used1 == 0)
+			{
+				createRect((canvas.width-150)/2 + canvas.height/20, (canvas.height-200)/2 + canvas.height/40, 2, 1, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[4] = 1;
+			}
+
+			if(parts[pPiesa][1] == parts[firstPiece][0] && piesa[pPiesa].used2 == 0)
+			{
+				createRect((canvas.width-150)/2 + canvas.height/20, (canvas.height-200)/2 + canvas.height/40, 2, 2, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[4] = 2;
+			}
+
+			exist = 1;
+		}
+
+		if(firstPieceCount[2] == 1)
+		{
+			testP = 2;
+
+			if(parts[pPiesa][0] == parts[firstPiece][0] && piesa[pPiesa].used1 == 0)
+			{
+				createRect((canvas.width-150)/2, (canvas.height-200)/2 + canvas.height/10, 1, 1, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[5] = 1;
+			}
+
+			if(parts[pPiesa][1] == parts[firstPiece][0] && piesa[pPiesa].used2 == 0)
+			{
+				createRect((canvas.width-150)/2, (canvas.height-200)/2 + canvas.height/10, 1, 2, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[5] = 2;
+			}
+
+			exist = 1;
+		}
+
+		if(firstPieceCount[3] == 1)
+		{
+			testP = 3;
+
+			if(parts[pPiesa][0] == parts[firstPiece][0] && piesa[pPiesa].used1 == 0)
+			{
+				createRect((canvas.width-150)/2 - canvas.height/10, (canvas.height-200)/2 + canvas.height/40, 2, 2, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[6] = 1;
+			}
+
+			if(parts[pPiesa][1] == parts[firstPiece][0] && piesa[pPiesa].used2 == 0)
+			{
+				createRect((canvas.width-150)/2 - canvas.height/10, (canvas.height-200)/2 + canvas.height/40, 2, 1, canvas.height/10, canvas.height/20, 0, 0);
+				currParts[6] = 2;
+			}
+
+			
+
+			exist = 1;
+		}
+	}
+
+	if(code == 3)
+	{
+		
+		if((piesa[vecin].y - canvas.height/10) < 0 && piesa[vecin].h > piesa[vecin].w)
+		{
+
+			if(parts[pPiesa][0] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 16;
+				createRect(piesa[vecin].x, piesa[vecin].y - canvas.height/20, 2, 1, canvas.height/10, canvas.height/20, 9, vecin);
+				exist = 1;
+
+			}
+
+			
+			if(parts[pPiesa][0] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{
+			
+				testP = 17;
+				createRect(piesa[vecin].x, piesa[vecin].y - canvas.height/20, 2, 1, canvas.height/10, canvas.height/20, 7, vecin);
+				exist = 1;
+
+			}
+			
+
+			if(parts[pPiesa][1] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 18;
+				createRect(piesa[vecin].x, piesa[vecin].y - canvas.height/20, 2, 2, canvas.height/10, canvas.height/20, 6, vecin);
+				exist = 1;
+			}
+
+
+			if(parts[pPiesa][1] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{	
+				testP = 19;
+				createRect(piesa[vecin].x, piesa[vecin].y - canvas.height/20, 2, 2, canvas.height/10, canvas.height/20, 8, vecin);
+				exist = 1;
+
+			}
+		
+		}
+
+		 if ((piesa[pPiesa].y + canvas.height/10 > piesa[hand[0]].y) && (piesa[vecin].y - canvas.height/10) > 0 && piesa[vecin].h > piesa[vecin].w)
+		 {
+
+		 	if(parts[pPiesa][0] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 20;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y + canvas.height/10, 2, 2, canvas.height/10, canvas.height/20, 9, vecin);
+				exist = 1;
+
+			}
+
+			
+			if(parts[pPiesa][0] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{
+			
+				testP = 21;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y + canvas.height/10, 2, 2, canvas.height/10, canvas.height/20, 7, vecin);
+				exist = 1;
+
+			}
+			
+
+			if(parts[pPiesa][1] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 22;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y + canvas.height/10, 2, 1, canvas.height/10, canvas.height/20, 6, vecin);
+				exist = 1;
+			}
+
+
+			if(parts[pPiesa][1] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{	
+				testP = 23;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y + canvas.height/10, 2, 1, canvas.height/10, canvas.height/20, 8, vecin);
+				exist = 1;
+
+			}
+		 }
+
+		 if((piesa[vecin].x + canvas.height/10) > (piesa[firstPiece].x + 8 * canvas.height/10)  && piesa[vecin].h < piesa[vecin].w) 
+		 {
+		 	
+		 	if(parts[pPiesa][0] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 24;
+				createRect(piesa[vecin].x + canvas.height/10, piesa[vecin].y, 1, 1, canvas.height/10, canvas.height/20, 9, vecin);
+				exist = 1;
+
+			}
+
+			
+			if(parts[pPiesa][0] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{
+			
+				testP = 25;
+				createRect(piesa[vecin].x + canvas.height/10, piesa[vecin].y, 1, 1, canvas.height/10, canvas.height/20, 7, vecin);
+				exist = 1;
+
+			}
+			
+
+			if(parts[pPiesa][1] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 26;
+				createRect(piesa[vecin].x + canvas.height/10, piesa[vecin].y, 1, 2, canvas.height/10, canvas.height/20, 6, vecin);
+				exist = 1;
+			}
+
+
+			if(parts[pPiesa][1] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{	
+				testP = 27;
+				createRect(piesa[vecin].x + canvas.height/10, piesa[vecin].y, 1, 2, canvas.height/10, canvas.height/20, 8, vecin);
+				exist = 1;
+
+			}
+		 }
+
+		 if(piesa[vecin].x - canvas.height/10 < 0 && (piesa[vecin].x) < piesa[firstPiece].x && piesa[vecin].h < piesa[vecin].w) 
+		 {
+		 	
+		 	if(parts[pPiesa][0] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 28;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y - canvas.height/20, 1, 2, canvas.height/10, canvas.height/20, 9, vecin);
+				exist = 1;
+
+			}
+
+			
+			if(parts[pPiesa][0] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{
+			
+				testP = 29;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y - canvas.height/20, 1, 1, canvas.height/10, canvas.height/20, 7, vecin);
+				exist = 1;
+
+			}
+			
+
+			if(parts[pPiesa][1] == parts[vecin][0] && piesa[vecin].used1 == 0)
+			{
+			
+				testP = 30;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y - canvas.height/20, 1, 1, canvas.height/10, canvas.height/20, 6, vecin);
+				exist = 1;
+			}
+
+
+			if(parts[pPiesa][1] == parts[vecin][1] && piesa[vecin].used2 == 0)
+			{	
+				testP = 31;
+				createRect(piesa[vecin].x - canvas.height/20, piesa[vecin].y - canvas.height/20, 1, 2, canvas.height/10, canvas.height/20, 8, vecin);
+				exist = 1;
+
+			}
+		 }
+	}
+}
+
+function render() 
+{
+
+	sortTiles();
+	//drawCard();
+
+	ctx.canvas.width  = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+	  
+
+	for(var i=0; i<countP; i++)
+		ctx.drawImage(piesa[hand[i]].image, piesa[hand[i]].x, piesa[hand[i]].y, piesa[hand[i]].w, piesa[hand[i]].h); 
+
+		
+/*
+	var testare = 3;
+
+
+	piesa[testare].image = images[testare+28];
+	piesa[testare].nume = testare+28;
+	piesa[testare].x = (canvas.width-150)/2;
+	piesa[testare].y = (canvas.height-200)/2;
+	piesa[testare].w = canvas.height/10;
+	piesa[testare].h = canvas.height/20;
+	piesa[testare].used = 2;
+*/
+
+	for(var i=0; i<28; i++)
+		if(piesa[i].used == 2 && piesa[i].hand == 0)
+			ctx.drawImage(piesa[i].image, piesa[i].x, piesa[i].y, piesa[i].w, piesa[i].h); 
+
+	for(var i=0; i<32; i++)
+	{
+		validate[i] = 0;
+		currParts[i] = -1;
+	}
+
+
+	var verif = 0;
+	for(var i=0; i<28; i++)
+		if(piesa[i].hand==0 && piesa[i].used==2)
+			verif = 1;
+
+			
+	if (nrJuc==1)
+	if(verif == 0)
+	{
+		testP = 2;
+		particularCases(1, selected);
+		firstPiece = selected;
+		exist = 1;
+	}
+
+	if(tested == 1 && selected > -1)
+	{
+		for(var i=0; i<28; i++)
+			if(piesa[i].used == 2 && piesa[i].hand == 0 && (piesa[i].used1 == 0 || piesa[i].used2 == 0))
+			{
+				if(piesa[i].nume < 28)
+				{
+					if(i == firstPiece && (parts[selected][0] == parts[i][0] || parts[selected][1] == parts[i][0]))
+						particularCases(2, selected);
+
+					else
+					{
+							if((piesa[i].y - canvas.height/10) < (piesa[firstPiece].y - 4 * (canvas.height/10) + canvas.height/20) || 
+							   (piesa[i].y + canvas.height/10) > (piesa[firstPiece].y + 4 * (canvas.height/10) - canvas.height/20) && ((piesa[i].used1 == 1 && (parts[i][1] == parts[selected][0] || parts[i][1] == parts[selected][1])) || (piesa[i].used2 == 1 && (parts[i][0] == parts[selected][1] || parts[i][0] == parts[selected][0]))))
+								particularCases(3, selected, i);
+
+							else
+							{
+								if(parts[selected][0] == parts[i][1]  && piesa[i].used2 == 0)
+								{
+									testP = 0;
+									createRect(piesa[i].x, piesa[i].y + piesa[i].h, 1, 1, canvas.height/10, canvas.height/20, 7, i);
+									exist = 1;
+								}
+
+								if(parts[selected][1] == parts[i][1] && piesa[i].used2 == 0)
+								{
+									testP = 1;
+									createRect(piesa[i].x, piesa[i].y + piesa[i].h, 1, 2, canvas.height/10, canvas.height/20, 8, i);
+									exist = 1;
+								}
+
+								if(parts[selected][0] == parts[i][0]  && piesa[i].used1 == 0)
+								{
+									testP = 2;
+									createRect(piesa[i].x, piesa[i].y - piesa[i].h, 1, 2, canvas.height/10, canvas.height/20, 9, i);
+									exist = 1;
+								}
+
+								if(parts[selected][1] == parts[i][0]  && piesa[i].used1 == 0)
+								{
+									testP = 3;
+									createRect(piesa[i].x, piesa[i].y - piesa[i].h, 1, 1, canvas.height/10, canvas.height/20, 6, i);
+									exist = 1;
+								}
+							}
+
+					}
+				}
+
+				
+				if(piesa[i].nume > 27 && piesa[i].nume < 56)
+				{
+					if(((piesa[i].x + canvas.height/10) > (piesa[firstPiece].x + 8 * (canvas.height/10)) ||
+					  (piesa[i].x - canvas.height/10) < 0) && ((piesa[i].used1 == 1 && (parts[i][1] == parts[selected][0] || parts[i][1] == parts[selected][1])) || (piesa[i].used2 == 1 && (parts[i][0] == parts[selected][1] || parts[i][0] == parts[selected][0]))))
+								particularCases(3, selected, i);
+
+					else
+					{
+						if(parts[selected][0] == parts[i][1]  && piesa[i].used2 == 0)
+						{
+							testP = 4;
+							createRect(piesa[i].x - piesa[i].w, piesa[i].y, 2, 2, canvas.height/10, canvas.height/20, 7, i);
+							exist = 1;
+						}
+
+						if(parts[selected][1] == parts[i][1]  && piesa[i].used2 == 0)
+						{
+							testP = 5;
+							createRect(piesa[i].x - piesa[i].w, piesa[i].y, 2, 1, canvas.height/10, canvas.height/20, 8, i);
+							exist = 1;
+						}
+						
+						if(parts[selected][0] == parts[i][0]  && piesa[i].used1 == 0)
+						{
+							testP = 6;
+							createRect(piesa[i].x + piesa[i].w, piesa[i].y, 2, 1, canvas.height/10, canvas.height/20, 9, i);
+							exist = 1;
+						}
+
+						if(parts[selected][1] == parts[i][0]  && piesa[i].used1 == 0)
+						{
+							testP = 7;
+							createRect(piesa[i].x + piesa[i].w, piesa[i].y, 2, 2, canvas.height/10, canvas.height/20, 6, i);
+							exist = 1;
+						}
+					}
+				}
+
+				if(piesa[i].nume > 55 && piesa[i].nume < 84)
+				{
+					if((piesa[i].y - canvas.height/10) < (piesa[firstPiece].y - 4 * (canvas.height/10) + canvas.height/20) || 
+					   (piesa[i].y + canvas.height/10) > (piesa[firstPiece].y + 4 * (canvas.height/10) - canvas.height/20) && ((piesa[i].used1 == 1 && (parts[i][1] == parts[selected][0] || parts[i][1] == parts[selected][1])) || (piesa[i].used2 == 1 && (parts[i][0] == parts[selected][1] || parts[i][0] == parts[selected][0]))))
+								particularCases(3, selected, i);
+					else
+					{
+						if(parts[selected][0] == parts[i][1]  && piesa[i].used2 == 0)
+						{
+							testP = 8;
+							createRect(piesa[i].x, piesa[i].y - piesa[i].h, 1, 2, canvas.height/10, canvas.height/20, 7, i);
+							exist = 1;
+						}
+
+						if(parts[selected][1] == parts[i][1]  && piesa[i].used2 == 0)
+						{
+							testP = 9;
+							createRect(piesa[i].x, piesa[i].y - piesa[i].h, 1, 1, canvas.height/10, canvas.height/20, 8, i);
+							exist = 1;
+						}
+						
+						if(parts[selected][0] == parts[i][0]  && piesa[i].used1 == 0)
+						{
+							testP = 10;
+							createRect(piesa[i].x, piesa[i].y + piesa[i].h, 1, 1, canvas.height/10, canvas.height/20, 9, i);
+							exist = 1;
+						}
+
+						if(parts[selected][1] == parts[i][0]  && piesa[i].used1 == 0)
+						{
+							testP = 11;
+							createRect(piesa[i].x, piesa[i].y + piesa[i].h, 1, 2, canvas.height/10, canvas.height/20, 6, i);
+							exist = 1;
+						}
+					}
+				}
+
+				if(piesa[i].nume > 83)
+				{
+					if(((piesa[i].x + canvas.height/10) > (piesa[firstPiece].x + 8 * (canvas.height/10)) ||
+					  (piesa[i].x - canvas.height/10) < 0) && ((piesa[i].used1 == 1 && (parts[i][1] == parts[selected][0] || parts[i][1] == parts[selected][1])) || (piesa[i].used2 == 1 && (parts[i][0] == parts[selected][1] || parts[i][0] == parts[selected][0]))))
+								particularCases(3, selected, i);
+
+					else
+					{
+					
+						if(parts[selected][0] == parts[i][1]  && piesa[i].used2 == 0)
+						{
+							testP = 12;
+							createRect(piesa[i].x + piesa[i].w, piesa[i].y, 2, 1, canvas.height/10, canvas.height/20, 7, i);
+							exist = 1;
+						}
+
+						if(parts[selected][1] == parts[i][1]  && piesa[i].used2 == 0)
+						{
+							testP = 13;
+							createRect(piesa[i].x + piesa[i].w, piesa[i].y, 2, 2, canvas.height/10, canvas.height/20, 8, i);
+							exist = 1;
+						}
+						
+						if(parts[selected][0] == parts[i][0]  && piesa[i].used1 == 0)
+						{
+							testP = 14;
+							createRect(piesa[i].x - piesa[i].w, piesa[i].y, 2, 2, canvas.height/10, canvas.height/20, 9, i);
+							exist = 1;
+						}
+
+						if(parts[selected][1] == parts[i][0]  && piesa[i].used1 == 0)
+						{
+							testP = 15;
+							createRect(piesa[i].x - piesa[i].w, piesa[i].y, 2, 1, canvas.height/10, canvas.height/20, 6, i);
+							exist = 1;
+						}
+					}
+				}
+			}
+		
+		ctx.lineWidth = 3;
+		ctx.strokeStyle = 'blue';
+
+		ctx.strokeRect(setx, sety, canvas.height/20, canvas.height/10);
+
+	}
+
+	
+}
+
+function testHand(x, y)
+{
+	for(var i=0; i<countP; i++)
+		if(piesa[hand[i]].hand == 1 && x > piesa[hand[i]].x && x < piesa[hand[i]].x + piesa[hand[i]].w && y > piesa[hand[i]].y && y < piesa[hand[i]].y + piesa[hand[i]].h)
+			{
+				setx = piesa[hand[i]].x;
+				sety = piesa[hand[i]].y;
+				selected = hand[i];
+				tested = 1;
+			}
+}
+
+function verif()
+{
+	ctx.canvas.width  = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+
+	
+	var x = event.clientX;     
+	var y = event.clientY;
+	console.log(x);
+	console.log(y);
+	//console.log(freePieces);
+
+	testHand(x, y);
+
+
+	for(var i=0; i<32; i++ )
+		if(validate[i] == 1 && turn==1)
+		{
+
+		if(exist == 1 && x > freePieces[i].x && x < freePieces[i].x + freePieces[i].width && y > freePieces[i].y && y < freePieces[i].y + freePieces[i].height && selected > -1 && tested == 1)
+			{ 
+			 	
+				tested = 0;
+	
+
+				piesa[selected].used = 2;
+				piesa[selected].hand = 0;
+
+				if(freePieces[i].type == 1)
+				{
+					if(freePieces[i].face == 1)
+					{
+						piesa[selected].x = freePieces[i].x;
+						piesa[selected].y = freePieces[i].y;
+
+						if(freePieces[i].used > 0)
+						{
+							
+							if(freePieces[i].used % 10 == 7)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 8)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 9)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 6)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+						}
+
+
+
+						if(currParts[3] == 2)
+						{
+							piesa[selected].used2 = 1;
+							firstPieceCount[0] = 0;
+							astup = 5;
+						}
+
+						if(currParts[5] == 1)
+						{
+							piesa[selected].used1 = 1;
+							firstPieceCount[2] = 0;
+							astup = 7;
+						}
+
+					}
+
+					if(freePieces[i].face == 2)
+					{
+						piesa[selected].image = images[selected + 56];
+						piesa[selected].nume = selected + 56;
+						piesa[selected].x = freePieces[i].x;
+						piesa[selected].y = freePieces[i].y;
+						
+
+						if(freePieces[i].used > 0)
+						{
+							
+							if(freePieces[i].used % 10 == 7)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 8)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 9)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 6)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+						}
+
+
+						if(currParts[3] == 1)
+						{
+							piesa[selected].used1 = 1;
+							firstPieceCount[0] = 0;
+							astup = 5;
+						}
+		
+						if(currParts[5] == 2)
+						{
+							piesa[selected].used2 = 1;
+							firstPieceCount[2] = 0;
+							astup = 7;
+						}
+					}
+				}
+
+				if(freePieces[i].type == 2)
+				{
+					if(freePieces[i].face == 1)
+					{
+						piesa[selected].image = images[selected + 84];
+						piesa[selected].nume = selected + 84;
+						piesa[selected].w = canvas.height/10;
+						piesa[selected].h = canvas.height/20;
+						piesa[selected].x = freePieces[i].x;
+						piesa[selected].y = freePieces[i].y;
+
+
+						if(freePieces[i].used > 0)
+						{
+							
+							if(freePieces[i].used % 10 == 7)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 8)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 9)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 6)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+						}
+
+
+						if(currParts[4] == 1)
+						{
+							piesa[selected].used1 = 1;
+							firstPieceCount[1] = 0;
+							astup = 6;
+						}
+
+						if(currParts[6] == 2)
+						{
+							piesa[selected].used2 = 1;
+							firstPieceCount[3] = 0;
+							astup = 8;
+						}
+					}
+
+					
+					
+					if(freePieces[i].face == 2)
+					{
+						piesa[selected].image = images[selected + 28];
+						piesa[selected].nume = selected + 28;
+						piesa[selected].w = canvas.height/10;
+						piesa[selected].h = canvas.height/20;
+						piesa[selected].x = freePieces[i].x;
+						piesa[selected].y = freePieces[i].y;
+
+						if(freePieces[i].used > 0)
+						{
+							
+							if(freePieces[i].used % 10 == 7)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 8)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used2 = 1;
+								astup=2;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 9)
+							{
+								piesa[selected].used1 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+							if(freePieces[i].used % 10 == 6)
+							{
+								piesa[selected].used2 = 1;
+								piesa[freePieces[i].tag].used1 = 1;
+								astup=1;
+								astupP=freePieces[i].tag;
+							}
+
+						}
+
+
+
+						if(currParts[6] == 1)
+						{
+							piesa[selected].used1 = 1;
+							firstPieceCount[3] = 0;
+							astup = 8;
+						}
+
+						if(currParts[4] == 2)
+						{
+							piesa[selected].used2 = 1;
+							firstPieceCount[1] = 0;
+							astup = 6;
+						}
+					}
+
+				}
+
+				
+				//ctx.drawImage(piesa[selected].image, piesa[selected].x, piesa[selected].y, piesa[selected].w, piesa[selected].h);  
+               
+			    turn=0;
+			   /* 
+          try{
+          		 socket=io.connect('http://127.0.0.1:1234');
+        	}
+       	  catch(e){}*/
+
+        	if(socket!=undefined)
+        	{
+								
+								
+                 console.log(astupP);
+                 
+				socket.emit('mutare',{piesa:piesa[selected].nume,cordx:piesa[selected].x,cordy:piesa[selected].y,used1:piesa[selected].used1,used2:piesa[selected].used2,astup:astup,astupP:astupP});
+				
+				var ok=1;
+				for(var i=0;i<28;i++)
+				if(piesa[i].hand==1)
+				ok=0;
+				if(ok==1)
+				socket.emit('castigat',{mesaj:-1});
+
+				
+       		}
+		
+				selected = -1;
+							
+			 }
+			 
+			
+		} 
+		//transmite serverului sa mute o piesa
+		
+         
+				
+	 render();
+}
+		
+
+
+</script>
+</html>
